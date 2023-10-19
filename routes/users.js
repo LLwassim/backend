@@ -92,6 +92,7 @@ router.post("/signup", async (req, res) => {
         ...req.body,
         customer_id: uniqueCustomerId,
       });
+      console.log("THIS IS THE REQUEST BODY: " + req.body);
       res.json(newUser);
     } else {
       // If the account doesn't exist, create the account first
@@ -105,6 +106,7 @@ router.post("/signup", async (req, res) => {
         date_opened: new Date(),
       });
 
+      console.log("THIS IS THE REQUEST BODY: " + req.body);
       // Insert a placeholder transaction with the account_id
       await Transactions.create({
         account_id: newAccount.account_id,
@@ -165,9 +167,17 @@ router.post("/signup", async (req, res) => {
       // Now, create the user with the generated customer_id
       const newUser = await User.create({
         ...req.body,
+        first_name: req.body.first_name,
+        last_name: req.body.last_name,
+        email: req.body.email,
+        password: req.body.password,
+        date_of_birth: req.body.date_of_birth,
+        contact_number: req.body.contact_number,
+        address: req.body.address,
         customer_id: uniqueCustomerId,
       });
-
+      console.log("THIS IS THE REQUEST BODY: " + req.body);
+      // console.log("Request object:", req);
       res.json(newUser);
     }
   } catch (error) {
