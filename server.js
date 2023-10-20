@@ -9,6 +9,7 @@ const corsOptions = {
   origin: [
     "http://localhost:3000",
     "https://llwassim.github.io/bankingapp-frontend",
+    "https://llwassim.github.io",
   ],
   methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
   credentials: true, // Required for handling cookies, authentication, or sessions
