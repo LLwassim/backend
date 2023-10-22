@@ -9,6 +9,7 @@ const CreditCards = require("../models/CreditCards");
 const SecurityLog = require("../models/SecurityLog");
 const CreditCardTransactions = require("../models/CreditCardTransactions");
 const { v4: uuidv4 } = require("uuid"); // Import the UUID library
+const bcrypt = require("bcrypt");
 
 // Create a new user and ensure an associated account exists
 router.post("/signup", async (req, res) => {
@@ -183,6 +184,36 @@ router.post("/signup", async (req, res) => {
   } catch (error) {
     console.error("Error creating user:", error);
     res.status(500).json({ error: "Internal Server Error" });
+  }
+});
+
+// User login
+router.post("/login", async (req, res) => {
+  console.log("Received a login request");
+  try {
+    const { email, password } = req.body;
+    const user = await User.findOne({ where: { email } });
+
+    if (!user) {
+      return res.status(401).json({ message: "Email does not exist" });
+    }
+    //becrypt to be implementeed later
+    passwordMatch = user.password == password;
+    // console.log("Expected Password:", user.password);
+    // const passwordMatch = await bcrypt.compare(password, user.password);
+    // console.log("Inputed Password:", user.password);
+    //console.log(await bcrypt.compare(password, user.password));
+    if (passwordMatch) {
+      return (
+        res.redirect("/home") &&
+        res.status(200).json({ message: "Authentication successful" })
+      );
+    } else {
+      return res.status(401).json({ message: "Wrong Password" });
+    }
+  } catch (error) {
+    console.error("Error during login:", error);
+    res.status(500).json({ message: "Internal Server Error" });
   }
 });
 

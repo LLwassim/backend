@@ -3,6 +3,7 @@ const mysql = require("mysql");
 const app = express();
 const port = 5001;
 const cors = require("cors");
+const path = require("path");
 require("dotenv").config();
 app.use(express.json());
 const corsOptions = {
@@ -17,6 +18,7 @@ const corsOptions = {
 };
 
 app.use(cors(corsOptions));
+
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USERNAME,
@@ -28,7 +30,15 @@ const usersRouter = require("./routes/users");
 
 app.use("/api/users", usersRouter);
 app.options("/api/users/signup", cors(corsOptions)); // Handle pre-flight for this specific route
+app.options("/api/users/login", cors(corsOptions));
 
+// Serve the React build files
+app.use(express.static(path.join(__dirname, "../bankingapp/build")));
+
+// Serve the index.html for all routes
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../bankingapp/build", "index.html"));
+});
 db.connect((err) => {
   if (err) {
     console.error("Error connecting to MySQL:", err);
@@ -36,7 +46,12 @@ db.connect((err) => {
     console.log("Connected to MySQL");
   }
 });
+const serverDirectory = path.join(__dirname, "../bankingapp/build");
+//console.log("__dirname is:", __dirname);
 
+console.log(
+  "This is where we are going locally for routing: " + serverDirectory
+);
 app.get("/", (req, res) => {
   res.send("Hello from Express!");
 });
