@@ -12,7 +12,7 @@ const corsOptions = {
     "https://llwassim.github.io/bankingapp-frontend",
     "https://llwassim.github.io",
   ],
-  methods: "GET,HEAD,PUT,PATCH,POST,DELETE",
+  methods: "GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS",
   credentials: true, // Required for handling cookies, authentication, or sessions
   allowedHeaders: ["Content-Type", "Authorization"], // Specify the headers your server expects
 };
@@ -32,13 +32,26 @@ app.use("/api/users", usersRouter);
 app.options("/api/users/signup", cors(corsOptions)); // Handle pre-flight for this specific route
 app.options("/api/users/login", cors(corsOptions));
 
-// Serve the React build files
-app.use(express.static(path.join(__dirname, "../bankingapp/build")));
+// Check if the application is running in a local development environment
+const isLocalDevelopment = process.env.NODE_ENV === "development";
 
-// Serve the index.html for all routes
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../bankingapp/build", "index.html"));
-});
+if (isLocalDevelopment) {
+  // Serve the React build files when deployed on the EC2 instance
+  app.use(express.static(path.join(__dirname, "../bankingapp/build")));
+
+  // Serve the index.html for all routes
+  app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname, "../bankingapp/build", "index.html"));
+  });
+
+  const serverDirectory = path.join(__dirname, "../bankingapp/build");
+  //console.log("__dirname is:", __dirname);
+
+  console.log(
+    "This is where we are going locally for routing: " + serverDirectory
+  );
+}
+
 db.connect((err) => {
   if (err) {
     console.error("Error connecting to MySQL:", err);
@@ -46,12 +59,7 @@ db.connect((err) => {
     console.log("Connected to MySQL");
   }
 });
-const serverDirectory = path.join(__dirname, "../bankingapp/build");
-//console.log("__dirname is:", __dirname);
 
-console.log(
-  "This is where we are going locally for routing: " + serverDirectory
-);
 app.get("/", (req, res) => {
   res.send("Hello from Express!");
 });
