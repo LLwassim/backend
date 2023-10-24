@@ -204,10 +204,7 @@ router.post("/login", async (req, res) => {
     // console.log("Inputed Password:", user.password);
     //console.log(await bcrypt.compare(password, user.password));
     if (passwordMatch) {
-      return (
-        res.redirect("/home") &&
-        res.status(200).json({ message: "Authentication successful" })
-      );
+      return res.status(200).json({ message: "Authentication successful" });
     } else {
       return res.status(401).json({ message: "Wrong Password" });
     }

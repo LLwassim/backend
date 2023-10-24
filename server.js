@@ -32,20 +32,23 @@ app.use("/api/users", usersRouter);
 app.options("/api/users/signup", cors(corsOptions)); // Handle pre-flight for this specific route
 app.options("/api/users/login", cors(corsOptions));
 
-// Check if the application is running in a local development environment
+
 const isLocalDevelopment = process.env.NODE_ENV === "development";
 
-if (isLocalDevelopment) {
+// Check if the application is running in a local development environment
+if (!isLocalDevelopment) {
   // Serve the React build files when deployed on the EC2 instance
   app.use(express.static(path.join(__dirname, "../bankingapp/build")));
 
+  const serverDirectory = path.join(
+    __dirname,
+    "../bankingapp/build",
+    "index.html"
+  );
   // Serve the index.html for all routes
   app.get("*", (req, res) => {
-    res.sendFile(path.join(__dirname, "../bankingapp/build", "index.html"));
+    res.sendFile(serverDirectory);
   });
-
-  const serverDirectory = path.join(__dirname, "../bankingapp/build");
-  //console.log("__dirname is:", __dirname);
 
   console.log(
     "This is where we are going locally for routing: " + serverDirectory
